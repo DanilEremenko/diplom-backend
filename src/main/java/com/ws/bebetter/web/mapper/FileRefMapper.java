@@ -13,6 +13,7 @@ public interface FileRefMapper extends Mappable<FileRef, RefDto> {
         }
 
         return RefDto.builder()
+                .guid(entity.getId())
                 .fileName(entity.getFileName())
                 .mimeType(entity.getMimeType())
                 .fileSpecification(entity.getFileSpecification())

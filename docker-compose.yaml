@@ -1,4 +1,21 @@
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    depends_on:
+      - be-better-db
+      - keycloak-db
+      - keycloak
+      - mailhog
+      - minio
+      - rabbitmq
+    networks:
+      - app-network
+    env_file:
+      - .env
   be-better-db:
     image: postgres:latest
     ports:

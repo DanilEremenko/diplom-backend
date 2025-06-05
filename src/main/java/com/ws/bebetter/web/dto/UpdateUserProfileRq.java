@@ -17,4 +17,6 @@ public class UpdateUserProfileRq {
     private LocalDate dateOfBirth;
 
     private String workExperience;
+
+    private String middleName;
 }
