@@ -225,7 +225,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserListItemDto> getUserListDto(UserListRequest request, User currentUser) {
-        userProfileService.checkActiveUserProfileRole(currentUser, RoleType.METHODOLOGIST);
+        userProfileService.checkActiveUserProfileRole(currentUser, RoleType.METHODOLOGIST, RoleType.MENTOR,
+                RoleType.MANAGER);
+
         return getUserList(request)
                 .map(user -> UserListItemDto.builder()
                         .id(user.getId())

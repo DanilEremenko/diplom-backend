@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -138,6 +139,9 @@ public class UserProfileServiceImpl implements UserProfileService {
         userProfile.setWorkExperience(updateUserProfileRq.getWorkExperience() != null ?
                 updateUserProfileRq.getWorkExperience() : userProfile.getWorkExperience());
 
+        userProfile.getUser().setMiddlename(updateUserProfileRq.getMiddleName() != null ? updateUserProfileRq.getMiddleName() :
+                userProfile.getUser().getMiddlename());
+
         Set<UserRoleDto> userRoleSet = user.getUserRoles().stream().map(userRoleMapper::buildUserRoleDto)
                 .collect(Collectors.toSet());
 
@@ -162,13 +166,19 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @NonNull
     @Override
-    public UserProfile checkActiveUserProfileRole(User user, RoleType roleType) {
+    public UserProfile checkActiveUserProfileRole(User user, RoleType... roleTypes) {
         var profile = getUserProfileByUser(user);
 
-        if (profile.getActiveRole() == null || !profile.getActiveRole().getRoleType().equals(roleType)) {
-            throw new OperationNotAllowedByCurrentUserRole(("Операция разрешена только для пользователей " +
-                    "с активной ролью %s").formatted(roleType));
+        boolean hasValidRole = Arrays.stream(roleTypes)
+                .anyMatch(roleType -> profile.getActiveRole() != null &&
+                        profile.getActiveRole().getRoleType().equals(roleType));
+
+        if (!hasValidRole) {
+            throw new OperationNotAllowedByCurrentUserRole(
+                    "Операция разрешена только для пользователей с одной из активных ролей: " +
+                            Arrays.toString(roleTypes));
         }
+
         return profile;
     }
 }

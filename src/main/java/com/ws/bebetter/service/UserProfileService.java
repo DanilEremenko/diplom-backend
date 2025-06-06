@@ -65,5 +65,5 @@ public interface UserProfileService {
      * @return {@link com.ws.bebetter.entity.UserProfile} профиль пользователя прошедшего валидацию по активной роли
      */
     @NonNull
-    UserProfile checkActiveUserProfileRole(User user, RoleType roleType);
+    UserProfile checkActiveUserProfileRole(User user, RoleType... roleType);
 }
