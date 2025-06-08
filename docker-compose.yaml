@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8081:8080"
+      - "8080:8080"
     depends_on:
       - be-better-db
       - keycloak-db
@@ -17,7 +17,7 @@ services:
     env_file:
       - .env
   be-better-db:
-    image: postgres:latest
+    image: postgres:17.5
     ports:
       - "${DB_PORT_EXTERNAL}:${DB_PORT_INTERNAL}"
     environment:
@@ -29,7 +29,7 @@ services:
     networks:
       - app-network
   keycloak-db:
-    image: postgres:latest
+    image: postgres:17.5
     ports:
       - "${KEYCLOAK_DB_PORT_EXTERNAL}:${KEYCLOAK_DB_PORT_INTERNAL}"
     environment:
@@ -87,6 +87,10 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     networks:
       - app-network
+volumes:
+  db-data:
+  keycloak-data:
+  minio-data:
 networks:
   app-network:
     driver: bridge

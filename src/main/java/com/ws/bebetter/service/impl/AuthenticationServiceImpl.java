@@ -75,18 +75,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String login = passwordRecoveryRq.getLogin();
         Optional<User> userOptional = userService.getUserByLogin(login);
         String secret = UUID.randomUUID().toString();
-        String link = mailProperties.getDomain() + "/reset-password?secret=" + secret + "&email=" + login;
 
         userOptional.ifPresent(user -> {
             if (!userProfileService.getUserProfileByUser(user).getActiveStatus()) {
                 throw new AccessDeniedException("Профиль пользователя должен быть активным");
             }
             userService.setUserRecoverySecret(user, secret);
-            eventPublisher.publishEvent(new NotificationEvent<>(user, NotificationType.PASSWORD_RECOVERY, link));
+            eventPublisher.publishEvent(new NotificationEvent<>(user, NotificationType.PASSWORD_RECOVERY, secret));
         });
 
         if (userOptional.isEmpty()) {
-            eventPublisher.publishEvent(new NotificationEvent<>(null, NotificationType.PASSWORD_RECOVERY, link));
+            eventPublisher.publishEvent(new NotificationEvent<>(null, NotificationType.PASSWORD_RECOVERY, secret));
         }
 
     }

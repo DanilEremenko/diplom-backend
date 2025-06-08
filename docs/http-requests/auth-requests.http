@@ -1,5 +1,5 @@
 ### Регистрация первого пользователя и новой компании
-POST http://{{host}}:{{port}}/api/v1/auth/register/
+POST http://localhost:8081/api/v1/auth/register/
 Content-Type: application/json
 
 {

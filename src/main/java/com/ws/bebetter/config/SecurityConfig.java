@@ -8,6 +8,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,25 +33,23 @@ public class SecurityConfig {
     @SneakyThrows
     public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) {
         httpSecurity
-                .authorizeHttpRequests(configurer ->
-                        configurer
-                                .requestMatchers(
-                                        "/api/v1/auth/register/",
-                                        "/api/v1/auth/login/",
-                                        "/api/v1/auth/refresh-token/",
-                                        "/api/v1/auth/password-recovery/",
-                                        "/api/v1/auth/reset-password/"
-                                )
-                                .permitAll()
-                                .anyRequest().authenticated())
-                .oauth2Login(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .csrf(CsrfConfigurer::disable)
-                .sessionManagement(sessionManagement -> sessionManagement
+                .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-                        .jwt(Customizer.withDefaults()))
-                .oauth2Client(Customizer.withDefaults());
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/api/v1/auth/register/",
+                                "/api/v1/auth/login/",
+                                "/api/v1/auth/refresh-token/",
+                                "/api/v1/auth/password-recovery/",
+                                "/api/v1/auth/reset-password/"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+//                .oauth2Login(Customizer.withDefaults())
+                .oauth2Client(Customizer.withDefaults())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
         return httpSecurity.build();
     }
@@ -58,7 +57,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000",
+                "http://localhost",
+                "http://localhost:8080",
+                "https://be-better-module.ru",
+                "http://be-better-module.ru" ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

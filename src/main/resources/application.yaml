@@ -37,8 +37,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_EXTERNAL}/realms/${KEYCLOAK_APPLICATION_REALM}
-          jwk-set-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_EXTERNAL}/realms/${KEYCLOAK_APPLICATION_REALM}/protocol/openid-connect/certs
+          issuer-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_INTERNAL}/realms/${KEYCLOAK_APPLICATION_REALM}
+          jwk-set-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_INTERNAL}/realms/${KEYCLOAK_APPLICATION_REALM}/protocol/openid-connect/certs
       client:
         registration:
           keycloak:
@@ -46,13 +46,20 @@ spring:
             client-secret: ${KEYCLOAK_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope: openid,profile,email
-            redirect-uri: http://localhost:8080/login/oauth2/code/keycloak
+            redirect-uri: http://keycloak:8080/login/oauth2/code/keycloak
             provider: keycloak
         provider:
           keycloak:
-            issuer-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_EXTERNAL}/realms/${KEYCLOAK_APPLICATION_REALM}
+            issuer-uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_INTERNAL}/realms/${KEYCLOAK_APPLICATION_REALM}
   keycloak:
-    uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_EXTERNAL}
+    uri: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_INTERNAL}
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${BROKER_PORT}
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+
 server:
   port: 8080
 
@@ -69,7 +76,7 @@ keycloak-initializer:
   client-secret: ${KEYCLOAK_CLIENT_SECRET}
   username: ${KEYCLOAK_ADMIN}
   password: ${KEYCLOAK_ADMIN_PASSWORD}
-  url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_EXTERNAL}/
+  url: http://${KEYCLOAK_HOST}:${KEYCLOAK_PORT_INTERNAL}/
 
 minio:
   minio-user: ${MINIO_ROOT_USER}
